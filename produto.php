@@ -1,11 +1,11 @@
 <?php
 
 class Produto {
-    private $conn;   
-    private $host = "65.108.237.84";
-    private $db = "prog_web";
-    private $user = "usrapp";
-    private $pass = "010203";
+    private $conn;
+    private $host = '65.108.237.xx';
+    private $db = 'prog_web';
+    private $user = 'usrapp';
+    private $pass = '010203XX';
     
     public function __construct() {
         // Criar conexão com o banco de dados
@@ -21,13 +21,19 @@ class Produto {
     public function adicionarProduto($nome, $descricao, $preco, $quantidade) {
         $sql = "INSERT INTO produtos (nome, descricao, preco, quantidade) VALUES (?, ?, ?, ?)";
         
+        // Preparar a consulta
         if ($stmt = $this->conn->prepare($sql)) {
+            // Vincular os parâmetros
             $stmt->bind_param("ssdi", $nome, $descricao, $preco, $quantidade);
+
+            // Executar a consulta
             if ($stmt->execute()) {
                 echo "Produto adicionado com sucesso!";
             } else {
                 echo "Erro ao adicionar o produto: " . $this->conn->error;
             }
+
+            // Fechar a instrução
             $stmt->close();
         } else {
             echo "Erro ao preparar a consulta: " . $this->conn->error;
@@ -41,46 +47,15 @@ class Produto {
 
         if ($result->num_rows > 0) {
             $produtos = [];
+
+            // Buscar cada linha de resultado e armazenar no array
             while ($row = $result->fetch_assoc()) {
                 $produtos[] = $row;
             }
+
             return $produtos;
         } else {
             return [];
-        }
-    }
-
-    // Método para alterar um produto
-    public function alterarProduto($id, $nome, $descricao, $preco, $quantidade) {
-        $sql = "UPDATE produtos SET nome = ?, descricao = ?, preco = ?, quantidade = ? WHERE id = ?";
-        
-        if ($stmt = $this->conn->prepare($sql)) {
-            $stmt->bind_param("ssdii", $nome, $descricao, $preco, $quantidade, $id);
-            if ($stmt->execute()) {
-                echo "Produto atualizado com sucesso!";
-            } else {
-                echo "Erro ao atualizar o produto: " . $this->conn->error;
-            }
-            $stmt->close();
-        } else {
-            echo "Erro ao preparar a consulta: " . $this->conn->error;
-        }
-    }
-
-    // Método para excluir um produto
-    public function excluirProduto($id) {
-        $sql = "DELETE FROM produtos WHERE id = ?";
-        
-        if ($stmt = $this->conn->prepare($sql)) {
-            $stmt->bind_param("i", $id);
-            if ($stmt->execute()) {
-                echo "Produto excluído com sucesso!";
-            } else {
-                echo "Erro ao excluir o produto: " . $this->conn->error;
-            }
-            $stmt->close();
-        } else {
-            echo "Erro ao preparar a consulta: " . $this->conn->error;
         }
     }
 

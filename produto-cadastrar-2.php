@@ -1,3 +1,33 @@
+<?php
+// Importa a classe Produto
+require_once 'produto.php';
+$produtoCadastrado = false;
+
+// Verifica se a requisição é do tipo POST
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Pega os dados enviados pelo formulário
+    $nome = $_POST['nome'];
+    $descricao = $_POST['descricao'];
+    $preco = $_POST['preco'];
+    $quantidade = $_POST['quantidade'];
+
+    // Criar uma nova instância da classe Produto
+    $produto = new Produto();
+
+    // Adicionar o novo produto no banco de dados
+    $produto->adicionarProduto($nome, $descricao, $preco, $quantidade);
+
+    // Fechar a conexão
+    $produto->fecharConexao();
+
+    $produtoCadastrado = true;
+
+    // Redirecionar para a página de listagem ou exibir uma mensagem de sucesso
+    echo "Produto adicionado com sucesso!";
+    // Ou redirecionar para outra página
+    // header("Location: listar_produtos.php");
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -8,11 +38,22 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+    <?php
+    if($produtoCadastrado){
+        echo '<div class="container mt-5">
+            <div class="alert alert-success" role="alert">
+                Produto adicionado com sucesso!
+            </div>
+            <a href="produto-cadastrar.php" class="btn btn-primary">Cadastrar Outro Produto</a>
+            <a href="listar_produtos.php" class="btn btn-secondary">Ver Produtos</a>
+        </div>';
+    }
+    ?>
     <div class="container mt-5">
         <h1 class="text-center mb-4">Cadastro de Produto</h1>
         
         <!-- Formulário de Cadastro de Produto -->
-        <form action="adicionar_produto.php" method="POST" class="border p-4 bg-light rounded">
+        <form action="produto-cadastrar.php" method="POST" class="border p-4 bg-light rounded">
             
             <!-- Nome do Produto -->
             <div class="mb-3">
@@ -45,75 +86,8 @@
             
         </form>
     </div>
+
     <!-- Bootstrap JS (Opcional) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-produto-listar.php
-<?php
-// Incluir a classe Produto
-require_once 'produto.php';
-
-// Instanciar a classe Produto
-$produto = new Produto();
-
-// Listar os produtos
-$produtos = $produto->listarProdutos();
-
-?>
-
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Produtos</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-</head>
-<body>
-    <h1>Lista de Produtos</h1>
-
-    <?php if (count($produtos) > 0): ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Descrição</th>
-                    <th>Preço</th>
-                    <th>Quantidade</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($produtos as $produto): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($produto['id']); ?></td>
-                        <td><?php echo htmlspecialchars($produto['nome']); ?></td>
-                        <td><?php echo htmlspecialchars($produto['descricao']); ?></td>
-                        <td><?php echo htmlspecialchars(number_format($produto['preco'], 2, ',', '.')); ?></td>
-                        <td><?php echo htmlspecialchars($produto['quantidade']); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php else: ?>
-        <p>Nenhum produto encontrado.</p>
-    <?php endif; ?>
 </body>
 </html>
